@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1711721592 source:c:\users\mikolaj\desktop\studia\lab1\lab_02\projekt_pp2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1711721106 c:\users\mikolaj\desktop\studia\lab1\lab_02\projekt_pp2\funkcje.h
+	<wchar.h>
+
