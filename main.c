@@ -5,14 +5,13 @@
 #include <sys/stat.h>
 
 #define MAX_NAZWA_PLIKU 100
-
 void listujPliki(const char *sciezka) {
     DIR *katalog;
     struct dirent *plik;
 
     katalog = opendir(sciezka);
     if (katalog) {
-        printf("Lista plików w katalogu '%s':\n", sciezka);
+        printf("Lista plikow w katalogu '%s':\n", sciezka);
         while ((plik = readdir(katalog)) != NULL) {
             if (plik->d_name[0] != '.') { // Pominięcie ukrytych plików
                 printf("%s\n", plik->d_name);
@@ -21,6 +20,31 @@ void listujPliki(const char *sciezka) {
         closedir(katalog);
     }
 }
+
+void wejdzDoFolderu(const char *sciezka) {
+    if (chdir(sciezka) == 0) {
+        printf("Wchodzenie do katalogu '%s' udane.\n", sciezka);
+    } else {
+        printf("Nie udalo sie wejsc do katalogu '%s'.\n", sciezka);
+    }
+}
+
+void przegladajFolder(const char *sciezka) {
+    DIR *katalog;
+    struct dirent *plik;
+
+    katalog = opendir(sciezka);
+    if (katalog) {
+        printf("Przegladanie katalogu '%s':\n", sciezka);
+        while ((plik = readdir(katalog)) != NULL) {
+            printf("%s\n", plik->d_name);
+        }
+        closedir(katalog);
+    } else {
+        printf("Nie udalo sie przegladac katalogu '%s'.\n", sciezka);
+    }
+}
+
 
 void utworzPlik(const char *nazwaPliku) {
     FILE *plik = fopen(nazwaPliku, "w");
@@ -98,11 +122,13 @@ int main() {
         printf("4. Zmien nazwe pliku\n");
         printf("5. Skopiuj plik\n");
         printf("6. Szukaj pliku\n");
-        printf("7. Wyjscie\n");
+        printf("7. Wejdz do folderu\n");
+        printf("8. Przegladaj folder\n");
+        printf("9. Wyjscie\n");
         printf("Wybierz opcje: ");
         scanf("%d", &wybor);
 
-        switch (wybor) {
+         switch (wybor) {
             case 1:
                 printf("Podaj sciezke do katalogu: ");
                 scanf("%s", nazwaPliku);
@@ -140,6 +166,16 @@ int main() {
                 szukajPlikow(zrodlo, nazwaPliku);
                 break;
             case 7:
+                printf("Podaj sciezke do folderu: ");
+                scanf("%s", nazwaPliku);
+                wejdzDoFolderu(nazwaPliku);
+                break;
+            case 8:
+                printf("Podaj sciezke do folderu: ");
+                scanf("%s", nazwaPliku);
+                przegladajFolder(nazwaPliku);
+                break;
+            case 9:
                 printf("Wyjscie z programu.\n");
                 exit(0);
             default:
