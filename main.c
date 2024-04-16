@@ -5,15 +5,18 @@
 #include <sys/stat.h>
 
 #define MAX_NAZWA_PLIKU 100
-void listujPliki(const char *sciezka) {
+
+char aktualnyFolder[MAX_NAZWA_PLIKU] = ".";
+
+void listujPliki() {
     DIR *katalog;
     struct dirent *plik;
 
-    katalog = opendir(sciezka);
+    katalog = opendir(aktualnyFolder);
     if (katalog) {
-        printf("Lista plikow w katalogu '%s':\n", sciezka);
+        printf("Lista plikow w katalogu '%s':\n", aktualnyFolder);
         while ((plik = readdir(katalog)) != NULL) {
-            if (plik->d_name[0] != '.') { // PominiÄ™cie ukrytych plikÃ³w
+            if (plik->d_name[0] != '.') { // Pominiêcie ukrytych plików
                 printf("%s\n", plik->d_name);
             }
         }
@@ -24,11 +27,27 @@ void listujPliki(const char *sciezka) {
 void wejdzDoFolderu(const char *sciezka) {
     if (chdir(sciezka) == 0) {
         printf("Wchodzenie do katalogu '%s' udane.\n", sciezka);
+        strcpy(aktualnyFolder, sciezka);
     } else {
         printf("Nie udalo sie wejsc do katalogu '%s'.\n", sciezka);
     }
 }
 
+void przegladajAktulanyFolder() {
+    DIR *katalog;
+    struct dirent *plik;
+
+    katalog = opendir(aktualnyFolder);
+    if (katalog) {
+        printf("Przegladanie katalogu '%s':\n", aktualnyFolder);
+        while ((plik = readdir(katalog)) != NULL) {
+            printf("%s\n", plik->d_name);
+        }
+        closedir(katalog);
+    } else {
+        printf("Nie udalo sie przegladac katalogu '%s'.\n", aktualnyFolder);
+    }
+}
 void przegladajFolder(const char *sciezka) {
     DIR *katalog;
     struct dirent *plik;
@@ -44,7 +63,6 @@ void przegladajFolder(const char *sciezka) {
         printf("Nie udalo sie przegladac katalogu '%s'.\n", sciezka);
     }
 }
-
 
 void utworzPlik(const char *nazwaPliku) {
     FILE *plik = fopen(nazwaPliku, "w");
@@ -107,6 +125,9 @@ void szukajPlikow(const char *sciezka, const char *nazwaPliku) {
     }
 }
 
+
+// pozostale funkcje bez wiekszych zmian po krotkich testach wszystko dzialalo
+
 int main() {
     int wybor;
     char nazwaPliku[MAX_NAZWA_PLIKU];
@@ -116,23 +137,22 @@ int main() {
 
     while (1) {
         printf("\nMenu:\n");
-        printf("1. Lista plikow w katalogu\n");
+        printf("1. Lista plikow w aktualnym katalogu\n");
         printf("2. Utworz nowy plik\n");
         printf("3. Usun plik\n");
         printf("4. Zmien nazwe pliku\n");
         printf("5. Skopiuj plik\n");
-        printf("6. Szukaj pliku\n");
+        printf("6. Szukaj pliku w aktualnym katalogu\n");
         printf("7. Wejdz do folderu\n");
-        printf("8. Przegladaj folder\n");
-        printf("9. Wyjscie\n");
+        printf("8. Przegladaj aktualny folder\n");
+        printf("9. Przegladaj folder\n");
+        printf("10. Wyjscie\n");
         printf("Wybierz opcje: ");
         scanf("%d", &wybor);
 
          switch (wybor) {
             case 1:
-                printf("Podaj sciezke do katalogu: ");
-                scanf("%s", nazwaPliku);
-                listujPliki(nazwaPliku);
+                listujPliki();
                 break;
             case 2:
                 printf("Podaj nazwe nowego pliku: ");
@@ -161,9 +181,7 @@ int main() {
             case 6:
                 printf("Podaj nazwe pliku do wyszukania: ");
                 scanf("%s", nazwaPliku);
-                printf("Podaj sciezke do katalogu do przeszukania: ");
-                scanf("%s", zrodlo);
-                szukajPlikow(zrodlo, nazwaPliku);
+                szukajPlikow(aktualnyFolder, nazwaPliku);
                 break;
             case 7:
                 printf("Podaj sciezke do folderu: ");
@@ -171,11 +189,14 @@ int main() {
                 wejdzDoFolderu(nazwaPliku);
                 break;
             case 8:
+                przegladajAktulanyFolder();
+                break;
+            case 9:
                 printf("Podaj sciezke do folderu: ");
                 scanf("%s", nazwaPliku);
                 przegladajFolder(nazwaPliku);
                 break;
-            case 9:
+            case 10:
                 printf("Wyjscie z programu.\n");
                 exit(0);
             default:
